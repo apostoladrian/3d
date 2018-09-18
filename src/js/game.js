@@ -7,8 +7,9 @@ import Cottage from "./objects/cottage";
 import TextureLoader from './texture-loader';
 import MaterialLoader from './material-loader';
 import OldCar from "./objects/oldcar";
+import Sun from "./lights/sun";
 
-const DEBUG = true;
+const DEBUG = false;
 
 
 class Game {
@@ -22,12 +23,14 @@ class Game {
     this._windowSize = {
       width: window.innerWidth - 5,
       height: window.innerHeight - 5
-    }
+    };
 
     this.debug = {
       textureLoader: TextureLoader,
       materialLoader: MaterialLoader
-    }
+    };
+
+    this._objects = [];
 
     this.bindAll();
 
@@ -56,10 +59,11 @@ class Game {
   }
 
   setupInteraction() {
-    // this._interactionEngine = new Interaction(this._camera);
-    this._controls = new THREE.OrbitControls(this._camera);
-    this._controls.enableKeys = false;
-    // this._controls.addEventListener('change', this.render);
+    if (DEBUG) {
+      this._controls = new THREE.OrbitControls(this._camera);
+      this._controls.enableKeys = false;
+    }
+    
     // get keyboard events
     window.onkeydown = this.keyboardListener;
     window.onkeyup = this.keyboardListener;
@@ -95,7 +99,9 @@ class Game {
 
   initScene() {
     this._scene = new THREE.Scene();
-    this._scene.fog = new THREE.FogExp2(0xefd1b5, 0.005);
+    if (!DEBUG) {
+      this._scene.fog = new THREE.FogExp2(0xefd1b5, 0.003);
+    }
 
     this._renderer = new THREE.WebGLRenderer();
 
@@ -140,17 +146,9 @@ class Game {
     // // spotLight.target = THREE.Vector3(0, 0, 0);
     // this._scene.add(spotLight);
 
-    this._dirLight = new THREE.DirectionalLight(0xffffff, 1.5, 400);
-    this._dirLight.position.set(400, 600, -600);
-    this._dirLight.castShadow = true;
-    this._dirLight.shadow.mapSize.width = Math.pow(2, 12);
-    this._dirLight.shadow.mapSize.height = Math.pow(2, 12);
-    this._dirLight.shadow.camera.near = 1;
-    this._dirLight.shadow.camera.far = 1500;
-    this._dirLight.shadow.camera.left = -1000;
-    this._dirLight.shadow.camera.bottom = -1000;
-    this._dirLight.shadow.camera.right = 1000;
-    this._dirLight.shadow.camera.top = 1000;
+    let light = new Sun();
+    this._objects.push(light);
+    this._dirLight = light.getMesh();
     this._scene.add(this._dirLight);
 
     if (DEBUG) {
@@ -170,7 +168,7 @@ class Game {
     this._camera.position.z = 80;
     this._camera.position.x = 80;
     this._camera.position.y = 70;
-
+    this._camera.lookAt(0, 0, 0);
   }
 
   startRender() {
@@ -178,9 +176,6 @@ class Game {
   }
 
   addObjects() {
-    this._objects = [];
-
-
     // floor
     let floor = new Floor(10000, 10000);
     this._objects.push(floor);
@@ -224,8 +219,9 @@ class Game {
       this._cameraGroup = new THREE.Group();
       this._cameraGroup.add(this._car.getMesh());
       this._cameraGroup.add(this._camera);
+      this._camera.lookAt(0, 0, 0);
       this._scene.add(this._cameraGroup);
-      
+
       ponycar.setParentGroup(this._cameraGroup);
       
     });
