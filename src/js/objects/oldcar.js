@@ -6,12 +6,12 @@ const path = 'external_objects/old_car2/';
 const defaultModelPath = 'scene.gltf';
 const correctionScale = 0.04;
 const startingSpeed = 0.1;
-const speedIncrement = 0.1;
+const speedIncrement = 0.15;
 const speedFriction = 0.01;
 const maxSpeed = 1;
 const minSpeed = -0.2;
 const startingRotation = 0;
-const rotationSpeed = 1;
+const rotationSpeed = 1.5;
 
 
 class OldCar extends BaseModel {
@@ -27,6 +27,12 @@ class OldCar extends BaseModel {
 
     this._speed = startingSpeed;
     this._rotation = startingRotation;
+
+    this._parentGroup = null;
+  }
+
+  setParentGroup(group) {
+    this._parentGroup = group;
   }
 
   loadObject() {
@@ -55,11 +61,11 @@ class OldCar extends BaseModel {
   }
 
   turnLeft() {
-    this._rotation += CMath.degreesToRads(rotationSpeed);
+    this._rotation += CMath.degreesToRads(rotationSpeed * this._speed);
   }
 
   turnRight() {
-    this._rotation -= CMath.degreesToRads(rotationSpeed);
+    this._rotation -= CMath.degreesToRads(rotationSpeed * this._speed);
   }
 
   speedFriction() {
@@ -71,8 +77,12 @@ class OldCar extends BaseModel {
   }
 
   animate() {
-    this._mesh.position.z += this._speed * Math.cos(this._rotation);
-    this._mesh.position.x += this._speed * Math.sin(this._rotation);
+    let obj = this._mesh;
+    if (this._parentGroup) {
+      obj = this._parentGroup;
+    }
+    obj.position.z += this._speed * Math.cos(this._rotation);
+    obj.position.x += this._speed * Math.sin(this._rotation);
     this._mesh.rotation.y = this._rotation;
     this.speedFriction();
   }

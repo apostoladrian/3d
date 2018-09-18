@@ -76,26 +76,26 @@ class Game {
       // console.log(`processing ${key} with value ${this._keysDown[key]}`);
       // console.log(typeof key);
       if (!this._keysDown[key]) continue;
-      switch(key) {
+      switch (key) {
         case '38': // arrow up
-        this._car.increaseSpeed();
-        break;
+          this._car.increaseSpeed();
+          break;
         case '40': // arrow down
-        this._car.decreaseSpeed();
-        break;
+          this._car.decreaseSpeed();
+          break;
         case '37': // arrow left
-        this._car.turnLeft();
-        break;
+          this._car.turnLeft();
+          break;
         case '39': // arrow right
-        this._car.turnRight();
-        break;
+          this._car.turnRight();
+          break;
       }
     }
   }
 
   initScene() {
     this._scene = new THREE.Scene();
-    this._scene.fog = new THREE.FogExp2( 0xefd1b5, 0.005 );
+    this._scene.fog = new THREE.FogExp2(0xefd1b5, 0.005);
 
     this._renderer = new THREE.WebGLRenderer();
 
@@ -167,10 +167,10 @@ class Game {
   setupCamera() {
     // create and add camera to scene
     this._camera = new THREE.PerspectiveCamera(40, this._windowSize.width / this._windowSize.height, 1, 5000);
-    this._camera.position.z = 800;
-    this._camera.position.x = 800;
-    this._camera.position.y = 700;
-    this._scene.add(this._camera);
+    this._camera.position.z = 80;
+    this._camera.position.x = 80;
+    this._camera.position.y = 70;
+
   }
 
   startRender() {
@@ -186,7 +186,7 @@ class Game {
     this._objects.push(floor);
     this._scene.add(floor.getMesh());
 
-    
+
     let startX = -480;
     let startY = 0;
     let startZ = -480;
@@ -217,10 +217,17 @@ class Game {
 
     // add a ponycar
     let ponycar = new OldCar();
-    ponycar.loadObject().then( () => {
+    ponycar.loadObject().then(() => {
       this._objects.push(ponycar);
-      this._scene.add(ponycar.getMesh());
       ponycar.getMesh().position.set(0, 0, 0);
+      
+      this._cameraGroup = new THREE.Group();
+      this._cameraGroup.add(this._car.getMesh());
+      this._cameraGroup.add(this._camera);
+      this._scene.add(this._cameraGroup);
+      
+      ponycar.setParentGroup(this._cameraGroup);
+      
     });
     this._car = ponycar;
 
