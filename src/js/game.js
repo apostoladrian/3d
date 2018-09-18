@@ -98,22 +98,22 @@ class Game {
     // // spotLight.target = THREE.Vector3(0, 0, 0);
     // this._scene.add(spotLight);
 
-    let dirLight = new THREE.DirectionalLight(0xffffff, 1.5, 400);
-    dirLight.position.set(400, 600, -600);
-    dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = Math.pow(2, 12);
-    dirLight.shadow.mapSize.height = Math.pow(2, 12);
-    dirLight.shadow.camera.near = 1;
-    dirLight.shadow.camera.far = 1500;
-    dirLight.shadow.camera.left = -700;
-    dirLight.shadow.camera.bottom = -700;
-    dirLight.shadow.camera.right = 700;
-    dirLight.shadow.camera.top = 700;
-    this._scene.add(dirLight);
+    this._dirLight = new THREE.DirectionalLight(0xffffff, 1.5, 400);
+    this._dirLight.position.set(400, 600, -600);
+    this._dirLight.castShadow = true;
+    this._dirLight.shadow.mapSize.width = Math.pow(2, 12);
+    this._dirLight.shadow.mapSize.height = Math.pow(2, 12);
+    this._dirLight.shadow.camera.near = 1;
+    this._dirLight.shadow.camera.far = 1500;
+    this._dirLight.shadow.camera.left = -300;
+    this._dirLight.shadow.camera.bottom = -300;
+    this._dirLight.shadow.camera.right = 300;
+    this._dirLight.shadow.camera.top = 300;
+    this._scene.add(this._dirLight);
 
-    this._scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
+    this._scene.add(new THREE.CameraHelper(this._dirLight.shadow.camera));
 
-    // var helper = new THREE.DirectionalLightHelper(dirLight, 5);
+    // var helper = new THREE.DirectionalLightHelper(this._dirLight, 5);
     // this._scene.add(helper);
 
     // let spotLightHelper = new THREE.SpotLightHelper(spotLight);
@@ -176,7 +176,10 @@ class Game {
     ponycar.loadObject().then( () => {
       this._objects.push(ponycar);
       this._scene.add(ponycar.getMesh());
-      ponycar.getMesh().position.set(26, 0, 55);
+      ponycar.getMesh().position.set(0, 0, 0);
+
+
+      this._dirLight.target = ponycar.getMesh();
     });
 
   }
@@ -185,6 +188,7 @@ class Game {
     for (let i = 0; i < this._objects.length; i++) {
       this._objects[i].animate();
     }
+    this._dirLight.position.z += 0.2;
   }
 
   render() {

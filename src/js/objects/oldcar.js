@@ -36,7 +36,7 @@ class PonyCar extends BaseModel {
   }
 
   animate() {
-    
+    this._mesh.position.z += .2;
   }
 
   getMesh() {
