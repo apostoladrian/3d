@@ -20,7 +20,9 @@ module.exports = {
       { from: './threejs/Physijs/physi.js', to: 'physi.js' },
       { from: './threejs/Physijs/physijs_worker.js', to: 'physijs_worker.js' },
       { from: './threejs/Physijs/ammo.js', to: 'ammo.js' },
-      { from: './src/stats.min.js', to: 'stats.js' }
+      { from: './src/stats.min.js', to: 'stats.js' },
+      { from: './threejs/three.js/examples/js/libs/inflate.min.js', to: 'inflate.js' },
+      { from: './src/js/external_objects', to: 'external_objects' }
     ]),
     new HtmlWebpackPlugin({
       template: './src/index.html'

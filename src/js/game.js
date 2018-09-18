@@ -6,6 +6,7 @@ import Cottage from "./objects/cottage";
 
 import TextureLoader from './texture-loader';
 import MaterialLoader from './material-loader';
+import PonyCar from "./objects/oldcar";
 
 
 class Game {
@@ -100,8 +101,8 @@ class Game {
     let dirLight = new THREE.DirectionalLight(0xffffff, 1.5, 400);
     dirLight.position.set(400, 600, -600);
     dirLight.castShadow = true;
-    dirLight.shadow.mapSize.width = Math.pow(2, 11);
-    dirLight.shadow.mapSize.height = Math.pow(2, 11);
+    dirLight.shadow.mapSize.width = Math.pow(2, 12);
+    dirLight.shadow.mapSize.height = Math.pow(2, 12);
     dirLight.shadow.camera.near = 1;
     dirLight.shadow.camera.far = 1500;
     dirLight.shadow.camera.left = -700;
@@ -145,6 +146,7 @@ class Game {
     let startX = -480;
     let startY = 0;
     let startZ = -480;
+    let roadWidth = 40;
     let cottage = new Cottage();
     cottage.loadObject().then(() => {
       this._objects.push(cottage);
@@ -157,9 +159,9 @@ class Game {
       for (let i = 0; i < 25; i++) {
         for (let j = 0; j < 15; j++) {
           if (Math.random() > .5) continue;
-          let _x = startX + i * (24.5 + 12.5);
+          let _x = startX + i * (24.5 + roadWidth);
           let _y = startY;
-          let _z = startZ + j * (52 + 12.5);
+          let _z = startZ + j * (52 + roadWidth);
           let c2 = cottage.getMesh().clone();
           this._scene.add(c2);
           c2.position.set(_x, _y, _z);
@@ -169,7 +171,13 @@ class Game {
 
     });
 
-
+    // add a ponycar
+    let ponycar = new PonyCar();
+    ponycar.loadObject().then( () => {
+      this._objects.push(ponycar);
+      this._scene.add(ponycar.getMesh());
+      ponycar.getMesh().position.set(26, 0, 55);
+    });
 
   }
 
