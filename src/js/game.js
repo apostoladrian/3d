@@ -6,13 +6,17 @@ import Cottage from "./objects/cottage";
 
 import TextureLoader from './texture-loader';
 import MaterialLoader from './material-loader';
-import PonyCar from "./objects/oldcar";
+import OldCar from "./objects/oldcar";
+
+const DEBUG = true;
 
 
 class Game {
   constructor(containerID) {
     // container
     this._container = document.getElementById(containerID || 'webgl-container');
+
+    this._keysDown = {};
 
     // window size
     this._windowSize = {
@@ -47,16 +51,52 @@ class Game {
     this.render = this.render.bind(this);
     this.animateObjects = this.animateObjects.bind(this);
     this.setupInteraction = this.setupInteraction.bind(this);
+    this.keyboardListener = this.keyboardListener.bind(this);
+    this.processKeys = this.processKeys.bind(this);
   }
 
   setupInteraction() {
     // this._interactionEngine = new Interaction(this._camera);
     this._controls = new THREE.OrbitControls(this._camera);
+    this._controls.enableKeys = false;
     // this._controls.addEventListener('change', this.render);
+    // get keyboard events
+    window.onkeydown = this.keyboardListener;
+    window.onkeyup = this.keyboardListener;
+  }
+
+  keyboardListener(ev) {
+    this._keysDown[ev.keyCode] = ev.type === 'keydown';
+    // console.log(`setting ${ev.keyCode} to ${this._keysDown[ev.keyCode]}`);
+    //ev.preventDefault();
+  }
+
+  processKeys() {
+    for (let key in this._keysDown) {
+      // console.log(`processing ${key} with value ${this._keysDown[key]}`);
+      // console.log(typeof key);
+      if (!this._keysDown[key]) continue;
+      switch(key) {
+        case '38': // arrow up
+        this._car.increaseSpeed();
+        break;
+        case '40': // arrow down
+        this._car.decreaseSpeed();
+        break;
+        case '37': // arrow left
+        this._car.turnLeft();
+        break;
+        case '39': // arrow right
+        this._car.turnRight();
+        break;
+      }
+    }
   }
 
   initScene() {
     this._scene = new THREE.Scene();
+    this._scene.fog = new THREE.FogExp2( 0xefd1b5, 0.005 );
+
     this._renderer = new THREE.WebGLRenderer();
 
     // set rendered size
@@ -66,8 +106,10 @@ class Game {
     console.log(this._renderer.capabilities);
 
 
-    var axesHelper = new THREE.AxesHelper(50);
-    this._scene.add(axesHelper);
+    if (DEBUG) {
+      var axesHelper = new THREE.AxesHelper(50);
+      this._scene.add(axesHelper);
+    }
     // add the renderer to the DOM
     this._container.appendChild(this._renderer.domElement);
   }
@@ -105,13 +147,15 @@ class Game {
     this._dirLight.shadow.mapSize.height = Math.pow(2, 12);
     this._dirLight.shadow.camera.near = 1;
     this._dirLight.shadow.camera.far = 1500;
-    this._dirLight.shadow.camera.left = -300;
-    this._dirLight.shadow.camera.bottom = -300;
-    this._dirLight.shadow.camera.right = 300;
-    this._dirLight.shadow.camera.top = 300;
+    this._dirLight.shadow.camera.left = -1000;
+    this._dirLight.shadow.camera.bottom = -1000;
+    this._dirLight.shadow.camera.right = 1000;
+    this._dirLight.shadow.camera.top = 1000;
     this._scene.add(this._dirLight);
 
-    this._scene.add(new THREE.CameraHelper(this._dirLight.shadow.camera));
+    if (DEBUG) {
+      this._scene.add(new THREE.CameraHelper(this._dirLight.shadow.camera));
+    }
 
     // var helper = new THREE.DirectionalLightHelper(this._dirLight, 5);
     // this._scene.add(helper);
@@ -172,15 +216,13 @@ class Game {
     });
 
     // add a ponycar
-    let ponycar = new PonyCar();
+    let ponycar = new OldCar();
     ponycar.loadObject().then( () => {
       this._objects.push(ponycar);
       this._scene.add(ponycar.getMesh());
       ponycar.getMesh().position.set(0, 0, 0);
-
-
-      this._dirLight.target = ponycar.getMesh();
     });
+    this._car = ponycar;
 
   }
 
@@ -188,7 +230,6 @@ class Game {
     for (let i = 0; i < this._objects.length; i++) {
       this._objects[i].animate();
     }
-    this._dirLight.position.z += 0.2;
   }
 
   render() {
@@ -196,7 +237,7 @@ class Game {
       this._stats.begin();
     }
 
-
+    this.processKeys();
     this.animateObjects();
     this._renderer.render(this._scene, this._camera);
 

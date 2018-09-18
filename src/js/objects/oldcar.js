@@ -1,13 +1,21 @@
 'use strict';
 import BaseModel from './base';
+import CMath from '../utils/math';
 
 const path = 'external_objects/old_car2/';
 const defaultModelPath = 'scene.gltf';
 const correctionScale = 0.04;
+const startingSpeed = 0.1;
+const speedIncrement = 0.1;
+const speedFriction = 0.01;
+const maxSpeed = 1;
+const minSpeed = -0.2;
+const startingRotation = 0;
+const rotationSpeed = 1;
 
 
-class PonyCar extends BaseModel {
-  constructor(pathModel, pathTexture, pathBumpMap) {
+class OldCar extends BaseModel {
+  constructor(pathModel) {
     super();
 
     this._pathModel = pathModel || defaultModelPath;
@@ -15,7 +23,10 @@ class PonyCar extends BaseModel {
     this.loadObject = this.loadObject.bind(this);
     this.animate = this.animate.bind(this);
     this.getMesh = this.getMesh.bind(this);
+    this.speedFriction = this.speedFriction.bind(this);
 
+    this._speed = startingSpeed;
+    this._rotation = startingRotation;
   }
 
   loadObject() {
@@ -35,13 +46,42 @@ class PonyCar extends BaseModel {
     });
   }
 
-  animate() {
-    this._mesh.position.z += .2;
+  increaseSpeed() {
+    this._speed = Math.min(maxSpeed, this._speed + speedIncrement);
   }
+
+  decreaseSpeed() {
+    this._speed = Math.max(minSpeed, this._speed - speedIncrement);
+  }
+
+  turnLeft() {
+    this._rotation += CMath.degreesToRads(rotationSpeed);
+  }
+
+  turnRight() {
+    this._rotation -= CMath.degreesToRads(rotationSpeed);
+  }
+
+  speedFriction() {
+    if (this._speed > 0) {
+      this._speed = Math.max(0, this._speed - speedFriction);
+    } else {
+      this._speed = Math.min(0, this._speed + speedFriction);
+    }
+  }
+
+  animate() {
+    this._mesh.position.z += this._speed * Math.cos(this._rotation);
+    this._mesh.position.x += this._speed * Math.sin(this._rotation);
+    this._mesh.rotation.y = this._rotation;
+    this.speedFriction();
+  }
+
+
 
   getMesh() {
     return this._mesh;
   }
 }
 
-export default PonyCar;
+export default OldCar;
