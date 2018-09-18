@@ -2,7 +2,10 @@
 
 import Floor from "./objects/floor";
 import Box from './objects/box';
-import CMath from "./utils/math";
+import Cottage from "./objects/cottage";
+
+import TextureLoader from './texture-loader';
+import MaterialLoader from './material-loader';
 
 
 class Game {
@@ -14,6 +17,11 @@ class Game {
     this._windowSize = {
       width: window.innerWidth - 5,
       height: window.innerHeight - 5
+    }
+
+    this.debug = {
+      textureLoader: TextureLoader,
+      materialLoader: MaterialLoader
     }
 
     this.bindAll();
@@ -54,8 +62,10 @@ class Game {
     this._renderer.setSize(this._windowSize.width, this._windowSize.height);
     this._renderer.shadowMap.enabled = true;
 
+    console.log(this._renderer.capabilities);
 
-    var axesHelper = new THREE.AxesHelper(20);
+
+    var axesHelper = new THREE.AxesHelper(50);
     this._scene.add(axesHelper);
     // add the renderer to the DOM
     this._container.appendChild(this._renderer.domElement);
@@ -70,33 +80,51 @@ class Game {
 
   setupLights() {
     // lights
-    this._light = new THREE.AmbientLight(0xffffff, .5);
+    this._light = new THREE.AmbientLight(0xffffff, 1);
     this._scene.add(this._light);
 
     // let pointLight = new THREE.PointLight(0xffffff, 2, 600);
     // pointLight.position.y = 100;
     // this._scene.add(pointLight);
 
-    let spotLight = new THREE.SpotLight(0xffffff, 2, 400);
-    spotLight.angle = CMath.degreesToRads(30);
-    spotLight.position.set(50,200, -50);
-    spotLight.castShadow = true;
-    spotLight.penumbra = 0.25;
-    spotLight.shadow.mapSize.width = 1024;
-    spotLight.shadow.mapSize.height = 1024;
-    // spotLight.target = THREE.Vector3(0, 0, 0);
-    this._scene.add(spotLight);
+    // let spotLight = new THREE.SpotLight(0xffffff, 2, 400);
+    // spotLight.angle = CMath.degreesToRads(30);
+    // spotLight.position.set(50, 200, -50);
+    // spotLight.castShadow = true;
+    // spotLight.penumbra = 0.25;
+    // spotLight.shadow.mapSize.width = 1024;
+    // spotLight.shadow.mapSize.height = 1024;
+    // // spotLight.target = THREE.Vector3(0, 0, 0);
+    // this._scene.add(spotLight);
 
-    let spotLightHelper = new THREE.SpotLightHelper(spotLight);
-    this._scene.add(spotLightHelper);
+    let dirLight = new THREE.DirectionalLight(0xffffff, 1.5, 400);
+    dirLight.position.set(400, 600, -600);
+    dirLight.castShadow = true;
+    dirLight.shadow.mapSize.width = Math.pow(2, 11);
+    dirLight.shadow.mapSize.height = Math.pow(2, 11);
+    dirLight.shadow.camera.near = 1;
+    dirLight.shadow.camera.far = 1500;
+    dirLight.shadow.camera.left = -700;
+    dirLight.shadow.camera.bottom = -700;
+    dirLight.shadow.camera.right = 700;
+    dirLight.shadow.camera.top = 700;
+    this._scene.add(dirLight);
+
+    this._scene.add(new THREE.CameraHelper(dirLight.shadow.camera));
+
+    // var helper = new THREE.DirectionalLightHelper(dirLight, 5);
+    // this._scene.add(helper);
+
+    // let spotLightHelper = new THREE.SpotLightHelper(spotLight);
+    // this._scene.add(spotLightHelper);
   }
 
   setupCamera() {
     // create and add camera to scene
     this._camera = new THREE.PerspectiveCamera(40, this._windowSize.width / this._windowSize.height, 1, 5000);
-    this._camera.position.z = 500;
-    this._camera.position.x = 500;
-    this._camera.position.y = 200;
+    this._camera.position.z = 800;
+    this._camera.position.x = 800;
+    this._camera.position.y = 700;
     this._scene.add(this._camera);
   }
 
@@ -107,15 +135,42 @@ class Game {
   addObjects() {
     this._objects = [];
 
+
     // floor
-    let floor = new Floor(1000, 1000);
+    let floor = new Floor(10000, 10000);
     this._objects.push(floor);
     this._scene.add(floor.getMesh());
 
-    // box
-    let box = new Box(10, 10, 10);
-    this._objects.push(box);
-    this._scene.add(box.getMesh());
+    
+    let startX = -480;
+    let startY = 0;
+    let startZ = -480;
+    let cottage = new Cottage();
+    cottage.loadObject().then(() => {
+      this._objects.push(cottage);
+      this._scene.add(cottage.getMesh());
+      cottage.getMesh().position.set(startX, startY, startZ);
+
+
+
+      // add a cottage
+      for (let i = 0; i < 25; i++) {
+        for (let j = 0; j < 15; j++) {
+          if (Math.random() > .5) continue;
+          let _x = startX + i * (24.5 + 12.5);
+          let _y = startY;
+          let _z = startZ + j * (52 + 12.5);
+          let c2 = cottage.getMesh().clone();
+          this._scene.add(c2);
+          c2.position.set(_x, _y, _z);
+
+        }
+      }
+
+    });
+
+
+
   }
 
   animateObjects() {

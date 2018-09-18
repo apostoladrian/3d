@@ -1,7 +1,7 @@
 'use strict';
 
-import defaultModelPath from '../objects/cerberus/Cerberus.obj';
-import defaultTexturePath from '../objects/cerberus/Cerberus_A.jpg';
+import defaultModelPath from '../external_objects/cerberus/Cerberus.obj';
+import defaultTexturePath from '../external_objects/cerberus/Cerberus_A.jpg';
 import BaseModel from './base';
 
 class Cerberus extends BaseModel {
@@ -22,7 +22,8 @@ class Cerberus extends BaseModel {
       let textureLoader = new THREE.TextureLoader().load(this._pathTexture, texture => {
         this._material = new THREE.MeshBasicMaterial({
           wireframe: false,
-          map: texture
+          map: texture,
+          // color: '#FF0000'
         });
         loader.load(this._pathModel, data => {
           this._mesh = data;
