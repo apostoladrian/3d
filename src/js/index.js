@@ -1,7 +1,7 @@
 'use strict';
 
 
-import Game from './game';
+import Game from './game2';
 import './threejs/indexThree';
 
 Physijs.scripts.worker = '/physijs_worker.js';

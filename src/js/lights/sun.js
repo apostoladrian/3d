@@ -3,7 +3,7 @@
 import BaseModel from "../objects/base";
 import CMath from "../utils/math";
 
-const rotationSpeed = 0.005;
+const rotationSpeed = 0.0001;
 const radius = 800;
 
 
@@ -30,10 +30,10 @@ class Sun extends BaseModel {
     this._dirLight.shadow.mapSize.height = Math.pow(2, 12);
     this._dirLight.shadow.camera.near = 1;
     this._dirLight.shadow.camera.far = 1500;
-    this._dirLight.shadow.camera.left = -1000;
-    this._dirLight.shadow.camera.bottom = -1000;
-    this._dirLight.shadow.camera.right = 1000;
-    this._dirLight.shadow.camera.top = 1000;
+    this._dirLight.shadow.camera.left = -400;
+    this._dirLight.shadow.camera.bottom = -400;
+    this._dirLight.shadow.camera.right = 400;
+    this._dirLight.shadow.camera.top = 400;
 
     this._mesh = this._dirLight;
   }
