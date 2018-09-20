@@ -1,7 +1,7 @@
-let mat = new THREE.MeshPhongMaterial({
+let mat = new THREE.MeshLambertMaterial({
   side: THREE.DoubleSide,
   color: '#362312',
-  wireframe: false
+  wireframe: true
 });
 
 export default mat;

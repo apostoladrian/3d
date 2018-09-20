@@ -1,6 +1,6 @@
 'use strict';
-import BaseModel from './base';
-import CMath from '../utils/math';
+import BaseModel from '../base';
+import CMath from '../../utils/math';
 
 const path = 'external_objects/old_car2/';
 const defaultModelPath = 'scene.gltf';

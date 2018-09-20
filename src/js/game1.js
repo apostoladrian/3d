@@ -6,7 +6,7 @@ import Cottage from "./objects/old/cottage";
 import TextureLoader from './texture-loader';
 import MaterialLoader from './material-loader';
 // import OldCar from "./objects/old/oldcar";
-import OldCar from './objects/custom/oldcar';
+import OldCar from './objects/old/oldcar';
 import Stump from './objects/custom/stump';
 import Sun from "./lights/sun";
 
@@ -225,14 +225,14 @@ class Game {
 
     });
 
-    // add a stump
-    let stump = new Stump();
-    stump.loadObject().then(() => {
-      this._objects.push(stump);
-      this._scene.add(stump.getMesh());
-    });
+    // // add a stump
+    // let stump = new Stump();
+    // stump.loadObject().then(() => {
+    //   this._objects.push(stump);
+    //   this._scene.add(stump.getMesh());
+    // });
 
-    this._stump = stump;
+    // this._stump = stump;
 
   }
 

@@ -94,7 +94,7 @@ class Game {
 
   addObjects() {
     // add the floor
-    this._objects.floor = new Floor(100, 100, 5, 5);
+    this._objects.floor = new Floor(200, 200, 255, 255);
     this._scene.add(this._objects.floor.getMesh());
   }
 
